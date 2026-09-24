@@ -16,5 +16,5 @@
     "--query-driver=**",
     "--compile-commands-dir=c:\\Users\\thiag\\projeto-esteira-tg-esp32\\build"
   ],
-  "idf.flashType": "JTAG"
+  "idf.flashType": "UART"
 }
