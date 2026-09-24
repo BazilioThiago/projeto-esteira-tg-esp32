@@ -38,10 +38,10 @@ Projeto ESP-32
 
 // ====== Periodicidade, prioridades, stack ======
 #define ENC_T_MS        5
-#define PRIO_ESTOP      5
-#define PRIO_ENC        3
-#define PRIO_CTRL       2
-#define PRIO_SORT       4
+#define PRIO_ESTOP      1
+#define PRIO_ENC        2
+#define PRIO_CTRL       4
+#define PRIO_SORT       3
 #define STK             3072
 #define ENC_D_US        5000 // deadline enc
 #define CTRL_D_US       10000 // deadline ctrl
