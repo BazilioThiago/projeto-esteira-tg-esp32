@@ -1,5 +1,5 @@
 /*
-Projeto ESP-32 
+Projeto ESP-32 - Guilherme Santana e Thiago Bazilio
 */
 
 #include <stdio.h>
