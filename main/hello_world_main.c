@@ -1,329 +1,207 @@
-/*
-Projeto ESP-32 - Guilherme Santana e Thiago Bazilio
-*/
-
+/* Esteira industrial M2 - Guilherme Santana e Thiago Bazilio.
+ * Base M1 preservada em docs/m1_original.c. Atuadores simulados. */
 #include <stdio.h>
-#include <inttypes.h>
 #include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_chip_info.h"
-#include "esp_flash.h"
-#include "esp_system.h"
-#include "esp_attr.h"
-
-// Esteira Industrial (ESP32 + FreeRTOS) — 4 tasks com touch ISR
-// - ENC_SENSE (periódica 5 ms) -> notifica SPD_CTRL
-// - SPD_CTRL (hard RT) -> controle PI simulado, trata HMI (soft) se solicitado
-// - SORT_ACT (hard RT, evento Touch B) -> aciona "desviador"
-// - SAFETY_TASK (hard RT, evento Touch D) -> E-stop
-// Compilado com ESP-IDF 5.x
-
-#include <string.h>
-#include <stdbool.h>
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
-#include "esp_timer.h"
-#include "esp_log.h"
+#include "driver/touch_sensor.h"
 #include "driver/gpio.h"
-#include "driver/touch_sensor.h"  // mudei tive que mudar, ta obsoleta e n tava rodando...
+#include "esp_timer.h"
+#include "esp_attr.h"
+#include "esp_check.h"
+#include "m2.h"
 
+_Static_assert(CONFIG_FREERTOS_UNICORE, "M2 requires UNICORE");
+_Static_assert(CONFIG_FREERTOS_HZ == 1000, "Use a 1 ms tick");
+_Static_assert(configUSE_PREEMPTION == CONFIG_ESTEIRA_PREEMPTION, "Kernel override missing");
+#define TP_OBJ TOUCH_PAD_NUM7
+#define TP_HMI TOUCH_PAD_NUM8
+#define TP_ESTOP TOUCH_PAD_NUM9
+#define Q_LEN 32
+static QueueHandle_t q_ctrl, q_sort, q_safe, q_hmi;
+static SemaphoreHandle_t belt_mutex;
+static portMUX_TYPE latch_mux = portMUX_INITIALIZER_UNLOCKED;
+static bool stopped;
+static struct { float rpm, pos, pwm; uint32_t production; } belt;
 
-#define TAG "ESTEIRA"
-
-// ====== Mapeamento dos touch pads ======
-#define TP_OBJ   TOUCH_PAD_NUM7   // Touch B -> detecção de objeto (desvio) -> sort_act
-#define TP_HMI   TOUCH_PAD_NUM8   // Touch C -> HMI/telemetria
-#define TP_ESTOP TOUCH_PAD_NUM9   // Touch D -> E-stop                      -> safety_task
-
-// ====== Periodicidade, prioridades, stack ======
-#define ENC_T_MS        5
-#define PRIO_ESTOP      5
-#define PRIO_ENC        3
-#define PRIO_CTRL       2
-#define PRIO_SORT       4
-#define STK             3072
-#define ENC_D_US        5000 // deadline enc
-#define CTRL_D_US       10000 // deadline ctrl
-#define SORT_D_US       10000 // deadline sort
-#define ESTOP_D_US      5000 // deadline estop
-// us é micro s
-
-
-// ====== Handles/IPC ======
-static TaskHandle_t hENC = NULL, hCTRL = NULL, hSORT = NULL, hSAFE = NULL;
-
-// Notificação ENC->CTRL (direct-to-task notification)
-static TaskHandle_t hCtrlNotify = NULL;
-
-// Fila de eventos para o SORT_ACT
-typedef struct {
-    int64_t t_evt_us;   // timestamp do toque (para logging/latência)
-} sort_evt_t;
-static QueueHandle_t qSort = NULL;
-
-// Semáforos para E-stop e HMI
-static SemaphoreHandle_t semEStop = NULL;
-static SemaphoreHandle_t semHMI   = NULL;
-
-// contadores para os testes
-static volatile int64_t  tCtrlEvtUs = 0, tEStopEvtUs = 0;
-static volatile int64_t  enc_evt_us = 0, enc_start_us = 0, enc_end_us = 0;
-static volatile int64_t  ctrl_evt_us = 0, ctrl_start_us = 0, ctrl_end_us = 0;
-static volatile uint32_t enc_misses = 0, ctrl_misses = 0, sort_misses = 0, estop_misses = 0;
-static volatile uint32_t enc_jobs = 0, ctrl_jobs = 0, sort_jobs = 0, estop_jobs = 0;
-static volatile bool     g_estop = false;
-
-// Estado "simulado" da esteira
-typedef struct {
-    float rpm;
-    float pos_mm;
-    float set_rpm;
-    float pwm;
-    uint32_t producao;
-} belt_state_t;
-
-static belt_state_t g_belt = { 
-    .rpm = 0.f, 
-    .pos_mm = 0.f,
-    .set_rpm = 120.0f, 
-    .pwm = 0.f,
-    .producao = 0 };
-
-// ====== Util: busy loop previsível (~WCET) ======
-static inline void cpu_tight_loop_us(uint32_t us)
+typedef struct { int64_t evt; uint32_t source; } event_t;
+/* Fixed instruction count, not a wall-time wait: frequency changes CPU cost.
+ * These are approximate loads; measure actual C on the board. */
+static void workload(unsigned units)
 {
-    int64_t start = esp_timer_get_time();
-    while ((esp_timer_get_time() - start) < us) {
-        __asm__ __volatile__("nop");
-    }
+    volatile uint32_t value = 1;
+    uint32_t n = units * 240U * CONFIG_ESTEIRA_WORK_SCALE / 100U;
+    for (uint32_t i = 0; i < n; ++i) value = value * 1664525U + 1013904223U;
+    (void)value;
 }
-
-
-// ====== ISR dos touch pads ======
-static void IRAM_ATTR touch_isr(void *arg) {
+bool m2_activate(bool safety, uint32_t source, int64_t evt)
+{
+    event_t e = {evt, source};
+    bool ok = xQueueSend(safety ? q_safe : q_sort, &e, 0) == pdTRUE;
+    if (!ok) m2_drop(safety ? M2_SAFE : M2_SORT);
+    return ok;
+}
+static void IRAM_ATTR touch_isr(void *arg)
+{
+    (void)arg;
     uint32_t status = touch_pad_get_status();
-    BaseType_t acordou_task = pdFALSE;
-    int64_t agora = esp_timer_get_time();
-
     touch_pad_clear_status();
-
+    BaseType_t wake = pdFALSE;
+    event_t e = {esp_timer_get_time(), M2_TOUCH};
     if (status & (1UL << TP_OBJ)) {
-        sort_evt_t ev = { .t_evt_us = agora };
-        xQueueSendFromISR(qSort, &ev, &acordou_task);
+        if (xQueueSendFromISR(q_sort, &e, &wake) != pdTRUE) m2_drop_isr(M2_SORT);
     }
-
     if (status & (1UL << TP_HMI)) {
-        xSemaphoreGiveFromISR(semHMI, &acordou_task);
+        if (xQueueSendFromISR(q_hmi, &e, &wake) != pdTRUE) m2_drop_isr(M2_HMI);
     }
-
     if (status & (1UL << TP_ESTOP)) {
-        tEStopEvtUs = agora;
-        xSemaphoreGiveFromISR(semEStop, &acordou_task);
+        portENTER_CRITICAL_ISR(&latch_mux);
+        stopped = true;
+        portEXIT_CRITICAL_ISR(&latch_mux);
+        if (xQueueSendFromISR(q_safe, &e, &wake) != pdTRUE) m2_drop_isr(M2_SAFE);
     }
-
-    if (acordou_task == pdTRUE) {
-        portYIELD_FROM_ISR();
-    }
+    /* In cooperative mode the touch ISR must not force a context switch. */
+#if configUSE_PREEMPTION
+    if (wake) portYIELD_FROM_ISR();
+#endif
 }
-
-// ====== Inicialização dos touch pads ======
-static void touch_init(void) {
-    uint16_t touch_value;
-
-    touch_pad_init();
-    touch_pad_set_fsm_mode(TOUCH_FSM_MODE_TIMER);
-    touch_pad_set_trigger_mode(TOUCH_TRIGGER_BELOW);
-
-    touch_pad_config(TP_OBJ, 0);
-    touch_pad_config(TP_HMI, 0);
-    touch_pad_config(TP_ESTOP, 0);
-
-    vTaskDelay(pdMS_TO_TICKS(50));
-
-    touch_pad_read(TP_OBJ, &touch_value);
-    touch_pad_set_thresh(TP_OBJ, touch_value * 80 / 100);
-
-    touch_pad_read(TP_HMI, &touch_value);
-    touch_pad_set_thresh(TP_HMI, touch_value * 80 / 100);
-
-    touch_pad_read(TP_ESTOP, &touch_value);
-    touch_pad_set_thresh(TP_ESTOP, touch_value * 80 / 100);
-
-    touch_pad_isr_register(touch_isr, NULL);
-    touch_pad_intr_enable();
-}
-
-//
-// ====== ENC_SENSE (periódica 5 ms): estima velocidade/posição ======
-static void task_enc_sense(void *arg)
+static void touch_init(void)
 {
-    TickType_t next = xTaskGetTickCount();
-    const TickType_t T = pdMS_TO_TICKS(ENC_T_MS);
-    int64_t proximo_evt = esp_timer_get_time();
-
-    for (;;) {
-        enc_evt_us = proximo_evt;
-        enc_start_us = esp_timer_get_time();
-        enc_jobs++;
-
-        // Dinâmica simulada: aproxima rpm do setpoint, integra posição
-        float rpm_motor = (g_belt.pwm / 100.0f) * 200.0f;
-        float err = rpm_motor - g_belt.rpm;
-        g_belt.rpm += 0.05f * err;             // aproximação lenta para simular inércia
-        g_belt.pos_mm += (g_belt.rpm / 60.0f) * (ENC_T_MS / 1000.0f) * 100.0f; // 100 mm por rev (exemplo)
-
-        // Carga determinística ~0.7 ms
-        cpu_tight_loop_us(700);
-
-        enc_end_us = esp_timer_get_time();
-        if ((enc_end_us - enc_evt_us) > ENC_D_US) enc_misses++;
-
-        // Notifica controle
-        if (hCtrlNotify) {
-            tCtrlEvtUs = enc_end_us;
-            xTaskNotifyGive(hCtrlNotify);
-        }
-
-        proximo_evt += ENC_T_MS * 1000;
-        vTaskDelayUntil(&next, T);
+    ESP_ERROR_CHECK(touch_pad_init());
+    ESP_ERROR_CHECK(touch_pad_set_fsm_mode(TOUCH_FSM_MODE_TIMER));
+    ESP_ERROR_CHECK(touch_pad_set_trigger_mode(TOUCH_TRIGGER_BELOW));
+    const touch_pad_t pads[] = {TP_OBJ, TP_HMI, TP_ESTOP};
+    for (unsigned i = 0; i < 3; ++i) ESP_ERROR_CHECK(touch_pad_config(pads[i], 0));
+    vTaskDelay(pdMS_TO_TICKS(100));
+    for (unsigned i = 0; i < 3; ++i) {
+        uint16_t baseline;
+        ESP_ERROR_CHECK(touch_pad_read(pads[i], &baseline));
+        ESP_ERROR_CHECK(touch_pad_set_thresh(pads[i], baseline * 80U / 100U));
     }
+    ESP_ERROR_CHECK(touch_pad_isr_register(touch_isr, NULL));
+    ESP_ERROR_CHECK(touch_pad_intr_enable());
 }
-
-// ====== SPD_CTRL (encadeada): controle PI simulado + HMI (soft) ======
-static void task_spd_ctrl(void *arg)
+static void task_enc(void *arg)
 {
-    // um controlador PI minimalista e simulado
-    float kp = 0.4f, ki = 0.1f, integ = 0.f;
-    // intervalo entre o prints
-    int64_t ultimo_print = 0;
-
+    int64_t release;
     for (;;) {
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY); // acorda após ENC_SENSE
-        ctrl_evt_us = tCtrlEvtUs;
-        ctrl_start_us = esp_timer_get_time();
-        ctrl_jobs++;
-
-        // Controle (hard): alvo é g_belt.set_rpm, atuando em g_belt.rpm (simulado)
-        if (!g_estop) {
-            float err = g_belt.set_rpm - g_belt.rpm;
-            integ += err * (ENC_T_MS / 1000.0f);
-            float u = kp * err + ki * integ;
-            
-            // muito mock
-            if (u > 100.0f) u = 100.0f;
-            if (u < 0.0f)   u = 0.0f;
-            g_belt.pwm = u;
-
-        } else {
-            g_belt.pwm = 0.f;
-            integ = 0.f;
-        }
-
-        // Carga determinística ~1.2 ms
-        cpu_tight_loop_us(1200);
-
-        ctrl_end_us = esp_timer_get_time();
-        if ((ctrl_end_us - ctrl_evt_us) > CTRL_D_US) ctrl_misses++;
-
-        // Trecho não-crítico (soft): se HMI solicitada, imprime e retorna rápido
-        if (xSemaphoreTake(semHMI, 0) == pdTRUE) {
-            // printf(TAG, "HMI: rpm=%.1f set=%.1f pos=%.1fmm",g_belt.rpm, g_belt.set_rpm, g_belt.pos_mm);
-
-            //
-            int64_t agora = esp_timer_get_time();
-
-            // imprime no máximo a cada 500 ms
-            if ((agora - ultimo_print) >= 500000) {
-
-                printf("RPM=%.1f | SET=%.1f | PWM=%.1f%% | POS=%.1f mm | PROD=%" PRIu32 "\n",
-                    g_belt.rpm, g_belt.set_rpm, g_belt.pwm, g_belt.pos_mm, g_belt.producao
-                );
-                printf("ENC evt=%lld start=%lld end=%lld misses=%" PRIu32 "/%" PRIu32 "\n", 
-                    (long long)enc_evt_us, (long long)enc_start_us, (long long)enc_end_us, enc_misses, enc_jobs
-                );
-                printf("CTRL evt=%lld start=%lld end=%lld misses=%" PRIu32 "/%" PRIu32 "\n", 
-                    (long long)ctrl_evt_us, (long long)ctrl_start_us, (long long)ctrl_end_us, ctrl_misses, ctrl_jobs
-                );
-                printf("SORT misses=%" PRIu32 "/%" PRIu32 " | ESTOP misses=%" PRIu32 "/%" PRIu32 "\n", 
-                    sort_misses, sort_jobs, estop_misses, estop_jobs);
-
-                ultimo_print = agora;
-            }
-
-            cpu_tight_loop_us(400); // ~0.4 ms (soft)
-        }
+        m2_wait_release(M2_ENC, &release);
+        int64_t start = esp_timer_get_time(), lock = start;
+        xSemaphoreTake(belt_mutex, portMAX_DELAY);
+        int64_t blocked = esp_timer_get_time() - lock;
+        belt.rpm += 0.05f * (belt.pwm * 2.0f - belt.rpm);
+        belt.pos += belt.rpm / 60.0f * 0.005f * 100.0f;
+        xSemaphoreGive(belt_mutex);
+        workload(70);
+        int64_t end = esp_timer_get_time();
+        m2_record(M2_ENC, M2_PERIODIC, release, start, end, blocked);
+        event_t e = {end, M2_CHAIN};
+        if (xQueueSend(q_ctrl, &e, 0) != pdTRUE) m2_drop(M2_CTRL);
     }
 }
-
-// ====== SORT_ACT (evento Touch B): aciona "desviador" no tempo certo ======
-static void task_sort_act(void *arg)
+static void task_ctrl(void *arg)
 {
-    sort_evt_t ev;
+    float integral = 0;
+    event_t e, hmi;
     for (;;) {
-        if (xQueueReceive(qSort, &ev, portMAX_DELAY) == pdTRUE) {
-            int64_t t0 = esp_timer_get_time();
-            sort_jobs++;
-
-            // Preparação de janela crítica (ex.: 0.7 ms)
-            cpu_tight_loop_us(700);
-
-            // Aqui você acionaria GPIO/solenóide no "instante"
-            // Nesta demo, apenas logamos o tempo gasto:
-            g_belt.producao++;
-            int64_t t1 = esp_timer_get_time();
-            int64_t dt = t1 - t0;
-            if ((t1 - ev.t_evt_us) > SORT_D_US) sort_misses++;
-
-            printf("SORT evt=%lld start=%lld end=%lld lat=%.3f ms exec=%.3f ms\n",
-                   (long long)ev.t_evt_us, (long long)t0, (long long)t1,
-                   (t0 - ev.t_evt_us) / 1000.0f, dt / 1000.0f);
+        xQueueReceive(q_ctrl, &e, portMAX_DELAY);
+        int64_t start = esp_timer_get_time(), lock = start;
+        xSemaphoreTake(belt_mutex, portMAX_DELAY);
+        int64_t blocked = esp_timer_get_time() - lock;
+        float err = 120.0f - belt.rpm;
+        integral += err * 0.005f;
+        float u = 0.4f * err + 0.1f * integral;
+        if (u > 100) u = 100;
+        if (u < 0) u = 0;
+        portENTER_CRITICAL(&latch_mux);
+        belt.pwm = stopped ? 0 : u;
+        if (stopped) integral = 0;
+        portEXIT_CRITICAL(&latch_mux);
+        xSemaphoreGive(belt_mutex);
+        workload(120);
+        m2_record(M2_CTRL, e.source, e.evt, start, esp_timer_get_time(), blocked);
+        if (xQueueReceive(q_hmi, &hmi, 0) == pdTRUE) {
+            int64_t hs = esp_timer_get_time();
+            workload(40);
+            m2_record(M2_HMI, hmi.source, hmi.evt, hs, esp_timer_get_time(), 0);
         }
+#if !configUSE_PREEMPTION
+        taskYIELD();
+#endif
     }
 }
-
-//
-// ====== SAFETY_TASK (evento Touch D): E-stop ======
-static void task_safety(void *arg)
+static void task_sort(void *arg)
 {
+    event_t e;
     for (;;) {
-        if (xSemaphoreTake(semEStop, portMAX_DELAY) == pdTRUE) {
-            int64_t t_evt = tEStopEvtUs;
-            int64_t t0 = esp_timer_get_time();
-            estop_jobs++;
-
-            // Ação crítica: zera "PWM", trava atuadores, sinaliza alarme (~0.9 ms)
-            g_estop = true;
-            g_belt.pwm = 0.f;
-            cpu_tight_loop_us(900);
-
-            int64_t t1 = esp_timer_get_time();
-            int64_t dt = t1 - t0;
-            if ((t1 - t_evt) > ESTOP_D_US) estop_misses++;
-
-            printf("ESTOP evt=%lld start=%lld end=%lld lat=%.3f ms exec=%.3f ms\n",
-                   (long long)t_evt, (long long)t0, (long long)t1,
-                   (t0 - t_evt) / 1000.0f, dt / 1000.0f);
-        }
+        xQueueReceive(q_sort, &e, portMAX_DELAY);
+        int64_t start = esp_timer_get_time();
+        workload(70);
+        int64_t lock = esp_timer_get_time();
+        xSemaphoreTake(belt_mutex, portMAX_DELAY);
+        int64_t blocked = esp_timer_get_time() - lock;
+        belt.production++;
+        xSemaphoreGive(belt_mutex);
+        m2_record(M2_SORT, e.source, e.evt, start, esp_timer_get_time(), blocked);
+#if !configUSE_PREEMPTION
+        taskYIELD();
+#endif
     }
 }
-
-
-// ====== app_main ======
+static void task_safe(void *arg)
+{
+    event_t e;
+    for (;;) {
+        xQueueReceive(q_safe, &e, portMAX_DELAY);
+        int64_t start = esp_timer_get_time(), lock = start;
+        xSemaphoreTake(belt_mutex, portMAX_DELAY);
+        int64_t blocked = esp_timer_get_time() - lock;
+        portENTER_CRITICAL(&latch_mux);
+        stopped = true;
+        belt.pwm = 0;
+        portEXIT_CRITICAL(&latch_mux);
+        xSemaphoreGive(belt_mutex);
+#if CONFIG_ESTEIRA_LED_GPIO >= 0
+        gpio_set_level(CONFIG_ESTEIRA_LED_GPIO, 1);
+#endif
+        workload(90);
+        m2_record(M2_SAFE, e.source, e.evt, start, esp_timer_get_time(), blocked);
+#if !configUSE_PREEMPTION
+        taskYIELD();
+#endif
+    }
+}
+static void create(TaskFunction_t fn, const char *name, unsigned stack, unsigned priority)
+{
+    configASSERT(xTaskCreatePinnedToCore(fn, name, stack, NULL, priority, NULL, 0) == pdPASS);
+}
 void app_main(void)
 {
-
-    qSort = xQueueCreate(10, sizeof(sort_evt_t));
-    semEStop = xSemaphoreCreateBinary();
-    semHMI = xSemaphoreCreateBinary();
-
+    printf("M2 policy=%s preemption=%d slicing=%d MHz=%d cores=%d protocol=%s\n",
+           CONFIG_ESTEIRA_DM ? "DM" : "CUSTOM", configUSE_PREEMPTION,
+           configUSE_TIME_SLICING, CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ,
+           CONFIG_FREERTOS_NUMBER_OF_CORES,
+           CONFIG_ESTEIRA_M1_BASELINE ? "UART" : CONFIG_ESTEIRA_TCP ? "TCP" : "UDP");
+    belt_mutex = xSemaphoreCreateMutex();
+    q_ctrl = xQueueCreate(Q_LEN, sizeof(event_t));
+    q_sort = xQueueCreate(Q_LEN, sizeof(event_t));
+    q_safe = xQueueCreate(Q_LEN, sizeof(event_t));
+    q_hmi = xQueueCreate(Q_LEN, sizeof(event_t));
+    configASSERT(belt_mutex && q_ctrl && q_sort && q_safe && q_hmi);
+    m2_init();
+#if CONFIG_ESTEIRA_LED_GPIO >= 0
+    gpio_reset_pin(CONFIG_ESTEIRA_LED_GPIO);
+    gpio_set_direction(CONFIG_ESTEIRA_LED_GPIO, GPIO_MODE_OUTPUT);
+    gpio_set_level(CONFIG_ESTEIRA_LED_GPIO, 0);
+#endif
+    create(task_safe, "SAFETY_TASK", 3072, CONFIG_ESTEIRA_DM ? 6 : 7);
+    create(task_sort, "SORT_ACT", 3072, CONFIG_ESTEIRA_DM ? 4 : 6);
+    create(task_ctrl, "SPD_CTRL", 3072, CONFIG_ESTEIRA_DM ? 5 : 4);
+    create(task_enc, "ENC_SENSE", 3072, CONFIG_ESTEIRA_DM ? 7 : 5);
+    create(m2_monitor_task, "MONITOR_TASK", 8192, 3);
+    if (!CONFIG_ESTEIRA_M1_BASELINE) create(m2_time_task, "TIME_TASK", 4096, 2);
+    m2_start_periodic();
     touch_init();
-
-    // Cria tasks (afinidade no core 0 para reduzir jitter, opcional)
-    xTaskCreatePinnedToCore(task_safety,   "SAFETY",   STK, NULL, PRIO_ESTOP, &hSAFE, 0);
-    xTaskCreatePinnedToCore(task_enc_sense,"ENC_SENSE",STK, NULL, PRIO_ENC,   &hENC,  0);
-    xTaskCreatePinnedToCore(task_spd_ctrl, "SPD_CTRL", STK, NULL, PRIO_CTRL,  &hCTRL, 0);
-    hCtrlNotify = hCTRL;
-    xTaskCreatePinnedToCore(task_sort_act, "SORT_ACT", STK, NULL, PRIO_SORT,  &hSORT, 0);
-
 }

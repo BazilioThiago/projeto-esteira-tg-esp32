@@ -1,0 +1,5 @@
+# Copy to network.local.defaults and fill privately; never commit passwords.
+CONFIG_ESTEIRA_WIFI_SSID="SUA_REDE_2G4"
+CONFIG_ESTEIRA_WIFI_PASSWORD="SUA_SENHA"
+CONFIG_ESTEIRA_PC_IP="192.168.1.100"
+CONFIG_ESTEIRA_PORT=3333

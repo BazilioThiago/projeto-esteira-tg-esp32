@@ -71,6 +71,12 @@ ehthumbs.db
 Desktop.ini
 
 # User-specific configuration files
+config/network.local.defaults
+sdkconfig.*.local
+output/measurements/
+tmp/pdfs/
+tools/pc_monitor.exe
+tools/pc_monitor.obj
 *.user
 *.workspace # General workspace files, can be from various tools
 *.suo       # Visual Studio Solution User Options

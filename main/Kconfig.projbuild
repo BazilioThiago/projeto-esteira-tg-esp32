@@ -1,0 +1,43 @@
+menu "Esteira M2"
+    config ESTEIRA_M1_BASELINE
+        bool "M1 baseline: no Wi-Fi/TIME, logs via UART at 921600 baud"
+        default n
+    config ESTEIRA_WIFI_SSID
+        string "Wi-Fi SSID (2.4 GHz)"
+        default ""
+    config ESTEIRA_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default ""
+    config ESTEIRA_PC_IP
+        string "PC IPv4 address"
+        default "192.168.1.100"
+    config ESTEIRA_PORT
+        int "PC port (TCP and UDP)"
+        range 1024 65535
+        default 3333
+    config ESTEIRA_TCP
+        bool "TCP (off = UDP)"
+        default n
+    config ESTEIRA_DM
+        bool "Deadline Monotonic (off = custom safety first)"
+        default y
+    config ESTEIRA_PREEMPTION
+        int "Kernel preemption: 1 preemptive, 0 cooperative"
+        range 0 1
+        default 1
+    config ESTEIRA_SLICING
+        int "Kernel time slicing: 1 on, 0 off"
+        range 0 1
+        default 1
+    config ESTEIRA_SNTP_SERVER
+        string "SNTP server"
+        default "pool.ntp.org"
+    config ESTEIRA_LED_GPIO
+        int "Safety LED GPIO (-1 = disabled)"
+        range -1 33
+        default 2
+    config ESTEIRA_WORK_SCALE
+        int "Fixed workload multiplier (percent)"
+        range 1 1000
+        default 100
+endmenu
