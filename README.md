@@ -1,29 +1,43 @@
 # Esteira industrial — ESP32 / FreeRTOS — M1 + M2
 
-Projeto de Guilherme Santana e Thiago Bazilio para Sistemas em Tempo Real.
+Guilherme Santana e Thiago Bazilio — Sistemas em Tempo Real.
 
 A M1 permanece em `main/hello_world_main.c`: encoder simulado, PI, triagem,
-E-stop e HMI com touch. A M2 acrescenta `main/m2.c`: MONITOR/TIME, WiFi,
-TCP/UDP, SNTP e logs temporais. Os exemplos de Felipe Viel ficam preservados
-em `codigos_viel`.
+E-stop e HMI com touch. A M2 em `main/m2.c` acrescenta MONITOR/TIME,
+WiFi, TCP/UDP, SNTP e instrumentação sem prints durante a medição.
 
-Durante a coleta, início/fim são salvos em variáveis e registros em RAM, sem
-prints seriais de HMI ou medição. A MONITOR transmite os registros pelo WiFi
-e o PC calcula as diferenças de tempo. O aviso de IP aparece só no aquecimento.
+## Coleta curta atual — v3
 
-- [Roadmap](docs/ROADMAP_M2.md)
+A ESP32 calcula WCRT/HWM(100%), misses, latências, jitter e (9,10)-firm em RAM.
+O PC inicia uma janela de **20 s**, recebe resumos e busca o resultado congelado.
+São mantidas amostras de timestamps, não o histórico de todas as execuções.
+Perdas de pacotes são resultados da comunicação e não apagam os contadores locais.
+
+1. `idf.py menuconfig`: configurar WiFi, protocolo e CPU do cenário.
+2. `idf.py build` e `idf.py -p COM3 flash monitor` (ajustar porta).
+3. Anotar o IP que aparece com **coleta curta v3**.
+4. Em outro terminal:
+
+```powershell
+python tools/m2_pc.py collect --ip 192.168.2.54 --proto UDP --scenario melhor --freq 80
+```
+
+Trocar o IP pelo da placa. Ao aparecer MEDINDO, tocar algumas vezes nos pinos
+27 (B), 33 (C) e 32 (D), sem horários exatos. O programa espera SNTP, controla a
+janela e gera JSONL, JSON, CSV e Markdown com nomes únicos em `resultados`.
+Repetir para TCP/80, UDP/160 e TCP/160 com o firmware correspondente.
+
+- [Passo a passo completo](docs/TESTES_M2.md)
 - [Resumo das mudanças e limites](docs/RESUMO_M2.md)
-- [Passo a passo da bancada e métricas](docs/TESTES_M2.md)
+- [Roadmap](docs/ROADMAP_M2.md)
 
-No terminal ESP-IDF, usar `idf.py menuconfig` → **Esteira - M2** para configurar
-WiFi/protocolo. Depois compilar/gravar conforme o roteiro. O firmware usa ESP32
-com touch, unicore e tick de 1 ms; a comparação usa 80/160 MHz da M1.
+Usar ESP-IDF 6.1, ESP32 com touch, unicore e runtime stats/trace habilitados.
+As tasks periódicas usam esp_timer com alarme absoluto; o PI e as prioridades
+continuam os da M1. Os exemplos do professor em `codigos_viel` são preservados.
+O coletor atual está em `tools/m2_short.py`, chamado por `tools/m2_pc.py`;
+a análise manual de arquivos antigos continua disponível.
 
-O cliente/analisador `tools/m2_pc.py` usa Python padrão e gera JSONL, JSON, CSV e
-Markdown. Nenhum resultado experimental acompanha esta alteração. Por solicitação
-do usuário, não foram executados testes nem concluída a compilação.
-
-`pytest_hello_world.py` é o arquivo legado do exemplo ESP-IDF; suas expectativas
-de “Hello world” não validam esta aplicação. Não foi usado nesta alteração.
-
+Não foram executados testes, compilação ou gravação desta revisão pelo assistente.
+Resultados antigos do grupo não foram apagados ou modificados por esta alteração.
+`pytest_hello_world.py` é legado do exemplo ESP-IDF e não valida esta aplicação.
 Não publicar credenciais reais do WiFi presentes no sdkconfig.

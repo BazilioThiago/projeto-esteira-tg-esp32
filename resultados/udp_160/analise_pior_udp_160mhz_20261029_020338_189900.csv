@@ -1,0 +1,7 @@
+﻿task,class,jobs,valid_jobs,invalid_jobs,misses,expected_jobs,miss_pct,wcrt_ms,hwm100_ms,wall_exec_max_ms,latency_max_ms,touch_latency_max_ms,start_jitter_abs_max_ms,touch_jobs,pc_jobs,firm
+ENC,hard,4000,4000,0,0,4000,0.0,3.776,3.776,1.913,3.02,,2.986,0,0,
+CTRL,hard,4000,4000,0,0,-1,0.0,2.445,2.445,2.404,1.08,,3.149,0,0,
+SORT,hard,44,44,0,0,-1,0.0,1.588,1.588,1.575,0.672,0.672,,36,8,
+SAFETY,hard,54,54,0,0,-1,0.0,2.625,2.625,0.946,1.691,1.691,,50,4,
+MONITOR,soft,40,40,0,0,40,0.0,21.037,21.037,20.686,0.91,,0.872,0,0,"{'m': 9, 'k': 10, 'windows': 31, 'violations': 0, 'minimum_met': 10, 'meets_requirement': True}"
+TIME,soft,20,20,0,0,20,0.0,2.564,2.564,0.132,2.436,,0.642,0,0,"{'m': 9, 'k': 10, 'windows': 11, 'violations': 0, 'minimum_met': 10, 'meets_requirement': True}"

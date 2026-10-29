@@ -1,0 +1,4 @@
+python tools/m2_pc.py collect --ip 192.168.2.54 --proto UDP --scenario pior --freq 80
+python tools/m2_pc.py collect --ip 192.168.2.54 --proto TCP --scenario pior --freq 80
+python tools/m2_pc.py collect --ip 192.168.2.54 --proto UDP --scenario pior --freq 160
+python tools/m2_pc.py collect --ip 192.168.2.54 --proto TCP --scenario pior --freq 160

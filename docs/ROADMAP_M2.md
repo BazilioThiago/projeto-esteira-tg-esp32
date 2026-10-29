@@ -1,12 +1,12 @@
-# Roadmap M1 → M2 — esteira industrial
+# Roadmap M1 → M2 — versão curta v3
 
-1. Conferir o enunciado da temática 2 e os exemplos do professor, sem alterar `codigos_viel`.
-2. Usar os extremos documentados na M1: Custom, preempção ON, slicing ON, unicore; melhor = 80 MHz (0,01% de hard misses), pior = 160 MHz (0,63%). Não substituir por 240 MHz (0,62%). Qualquer hard miss impede declarar sucesso integral.
-3. Manter as quatro tarefas e seus algoritmos. Acrescentar instrumentação comum com evento, início, fim, deadline e origem; registrar perdas da instrumentação. Conforme orientação do professor, salvar os tempos em variáveis e fila em RAM, sem prints seriais durante a medição, inclusive na HMI. Calcular as diferenças depois no PC.
-4. Acrescentar MONITOR_TASK (T=D=500 ms): WiFi, logs, comandos SORT/ESTOP, protocolos UDP e TCP selecionáveis. Acrescentar TIME_TASK (T=D=1 s): SNTP assíncrono, hora e ciclos desde a última sincronização.
-5. Criar cliente de bancada que registre mensagens brutas, timestamps do PC, RTT e respostas; criar análise de WCRT/HWM, misses, jitter, latência e (9,10)-firm para MONITOR/TIME. Ocupação de CPU deve vir de runtime/idle, não da soma de tempos de parede preemptados.
-6. Entregar código e scripts para compilação e coleta pelo grupo. Conforme orientação posterior do usuário, não executar testes nem novas compilações nesta alteração.
-7. Na bancada: quatro combinações (80/160 MHz × UDP/TCP), pelo menos três repetições por combinação, mesma duração e estímulos; incluir touch e comandos remotos. Salvar configuração e logs de cada execução.
-8. Produzir resumo e roteiro detalhado, incluindo limites de sincronização, perdas, interferência/bloqueio e itens restantes para relatório e apresentação.
+1. Preservar PI, touch, ações e prioridades da M1; consultar e manter os exemplos de `codigos_viel`.
+2. Acrescentar MONITOR (500 ms), TIME (1 s), WiFi/SNTP, UDP/TCP e comandos SORT/ESTOP.
+3. Capturar evento/início/fim em variáveis e atualizar métricas em RAM, sem prints durante a janela.
+4. Corrigir a referência temporal usando liberações absolutas do esp_timer para ENC/MONITOR/TIME, com os mesmos períodos/prioridades. Declarar o mecanismo na comparação com M1.
+5. Controlar START e duração pelo PC, com identificador de sessão e resultado congelado recuperável. Eliminar dependência de transmitir todos os jobs para medir WCRT/misses/firm.
+6. Calcular localmente HWM(100%), misses, latências, jitter, firm (9,10) e CPU via runtime/idle. Reter amostras de timestamps e registro do maior R. Calcular RTT no PC e registrar perdas como resultado da comunicação.
+7. Executar pelo grupo quatro casos de 20 s: Custom/preempção ON/slicing ON/unicore, 80 e 160 MHz × UDP e TCP. Melhor/pior são os extremos documentados na M1. Toques breves nos três pinos, sem cronograma exato. Repetições adicionais se houver tempo.
+8. Gerar JSON/CSV/Markdown automaticamente, montar tabela comparativa e relatório PDF, discutir interferência/bloqueio e demonstrar compilação/funcionamento presencial.
 
-O roadmap descreve o trabalho autorizado pelo usuário. O PDF é a fonte dos requisitos acadêmicos; não autoriza publicação no GitHub ou envio ao professor.
+Roteiro vigente: `TESTES_M2.md`. Os 120 s, três repetições obrigatórias e horários exatos de toque foram retirados: eram escolhas anteriores do procedimento, não exigências fixadas no trecho da metodologia. O assistente não executa testes/compilação/gravação, conforme pedido do usuário. Logs antigos do grupo são preservados. Nenhuma publicação/envio ao professor é feita automaticamente.

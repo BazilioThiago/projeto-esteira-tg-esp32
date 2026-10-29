@@ -16,7 +16,7 @@ Projeto ESP-32 - Guilherme Santana e Thiago Bazilio
 // - SPD_CTRL (hard RT) -> controle PI simulado, trata HMI (soft) se solicitado
 // - SORT_ACT (hard RT, evento Touch B) -> aciona "desviador"
 // - SAFETY_TASK (hard RT, evento Touch D) -> E-stop
-// Compilado com ESP-IDF 5.x
+// ESP-IDF 6.1: M2 usa timer com alarme absoluto
 
 #include <string.h>
 #include <stdbool.h>
@@ -156,12 +156,11 @@ static void touch_init(void) {
 // ====== ENC_SENSE (periódica 5 ms): estima velocidade/posição ======
 static void task_enc_sense(void *arg)
 {
-    TickType_t next = xTaskGetTickCount();
-    const TickType_t T = pdMS_TO_TICKS(ENC_T_MS);
-    int64_t proximo_evt = esp_timer_get_time();
+    m2_periodic_t periodo;
+    m2_periodic_init(&periodo, ENC_T_MS * 1000);
 
     for (;;) {
-        enc_evt_us = proximo_evt;
+        enc_evt_us = m2_periodic_wait(&periodo);
         enc_start_us = esp_timer_get_time();
         enc_jobs++;
 
@@ -186,8 +185,6 @@ static void task_enc_sense(void *arg)
         }
 
         m2_log("ENC", enc_evt_us, enc_start_us, enc_end_us, ENC_D_US, "periodic");
-        proximo_evt += ENC_T_MS * 1000;
-        vTaskDelayUntil(&next, T);
     }
 }
 
@@ -280,7 +277,7 @@ static void task_safety(void *arg)
             // Ação crítica: zera "PWM", trava atuadores, sinaliza alarme (~0.9 ms)
             g_estop = true;
             g_belt.pwm = 0.f;
-            if (CONFIG_M2_LED_GPIO >= 0) gpio_set_level(CONFIG_M2_LED_GPIO, 1);
+            if (CONFIG_M2_LED_GPIO >= 0) gpio_set_level(CONFIG_M2_LED_GPIO, 1); // ACENDE O LED
             cpu_tight_loop_us(900);
 
             int64_t t1 = esp_timer_get_time();
@@ -313,7 +310,7 @@ void app_main(void)
     m2_init();
     if (CONFIG_M2_LED_GPIO >= 0) {
         gpio_set_direction(CONFIG_M2_LED_GPIO, GPIO_MODE_OUTPUT);
-        gpio_set_level(CONFIG_M2_LED_GPIO, 0);
+        gpio_set_level(CONFIG_M2_LED_GPIO, 0); //começa desligado o led
     }
     touch_init();
 
