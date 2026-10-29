@@ -1,53 +1,29 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-H21 | ESP32-H4 | ESP32-P4 | ESP32-S2 | ESP32-S3 | ESP32-S31 | Linux |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | --------- | -------- | --------- | -------- | -------- | -------- | -------- | --------- | ----- |
+# Esteira industrial — ESP32 / FreeRTOS — M1 + M2
 
-# Hello World Example
+Projeto de Guilherme Santana e Thiago Bazilio para Sistemas em Tempo Real.
 
-Starts a FreeRTOS task to print "Hello World".
+A M1 permanece em `main/hello_world_main.c`: encoder simulado, PI, triagem,
+E-stop e HMI com touch. A M2 acrescenta `main/m2.c`: MONITOR/TIME, WiFi,
+TCP/UDP, SNTP e logs temporais. Os exemplos de Felipe Viel ficam preservados
+em `codigos_viel`.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+Durante a coleta, início/fim são salvos em variáveis e registros em RAM, sem
+prints seriais de HMI ou medição. A MONITOR transmite os registros pelo WiFi
+e o PC calcula as diferenças de tempo. O aviso de IP aparece só no aquecimento.
 
-## How to use example
+- [Roadmap](docs/ROADMAP_M2.md)
+- [Resumo das mudanças e limites](docs/RESUMO_M2.md)
+- [Passo a passo da bancada e métricas](docs/TESTES_M2.md)
 
-Follow detailed instructions provided specifically for this example.
+No terminal ESP-IDF, usar `idf.py menuconfig` → **Esteira - M2** para configurar
+WiFi/protocolo. Depois compilar/gravar conforme o roteiro. O firmware usa ESP32
+com touch, unicore e tick de 1 ms; a comparação usa 80/160 MHz da M1.
 
-Select the instructions depending on Espressif chip installed on your development board:
+O cliente/analisador `tools/m2_pc.py` usa Python padrão e gera JSONL, JSON, CSV e
+Markdown. Nenhum resultado experimental acompanha esta alteração. Por solicitação
+do usuário, não foram executados testes nem concluída a compilação.
 
-- [ESP32 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/stable/get-started/index.html)
-- [ESP32-S2 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html)
+`pytest_hello_world.py` é o arquivo legado do exemplo ESP-IDF; suas expectativas
+de “Hello world” não validam esta aplicação. Não foi usado nesta alteração.
 
-
-## Example folder contents
-
-The project **hello_world** contains one source file in C language [hello_world_main.c](main/hello_world_main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt` files that provide set of directives and instructions describing the project's source files and targets (executable, library, or both).
-
-Below is short explanation of remaining files in the project folder.
-
-```
-├── CMakeLists.txt
-├── pytest_hello_world.py      Python script used for automated testing
-├── main
-│   ├── CMakeLists.txt
-│   └── hello_world_main.c
-└── README.md                  This is the file you are currently reading
-```
-
-For more information on structure and contents of ESP-IDF projects, please refer to Section [Build System](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html) of the ESP-IDF Programming Guide.
-
-## Troubleshooting
-
-* Program upload failure
-
-    * Hardware connection is not correct: run `idf.py -p PORT monitor`, and reboot your board to see if there are any output logs.
-    * The baud rate for downloading is too high: lower your baud rate in the `menuconfig` menu, and try again.
-
-## Technical support and feedback
-
-Please use the following feedback channels:
-
-* For technical queries, go to the [esp32.com](https://esp32.com/) forum
-* For a feature request or bug report, create a [GitHub issue](https://github.com/espressif/esp-idf/issues)
-
-We will get back to you as soon as possible.
+Não publicar credenciais reais do WiFi presentes no sdkconfig.

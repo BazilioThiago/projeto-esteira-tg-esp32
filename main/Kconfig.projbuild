@@ -1,0 +1,31 @@
+menu "Esteira - M2"
+    config M2_WIFI_SSID
+        string "WiFi SSID"
+        default ""
+    config M2_WIFI_PASS
+        string "WiFi senha (nao publicar sdkconfig com senha)"
+        default ""
+    choice M2_PROTOCOL
+        prompt "Protocolo do experimento"
+        default M2_UDP
+        config M2_UDP
+            bool "UDP"
+        config M2_TCP
+            bool "TCP"
+    endchoice
+    config M2_PORT
+        int "Porta UDP ou TCP na ESP32"
+        range 1024 65535
+        default 5000
+    config M2_SNTP_SERVER
+        string "Servidor SNTP"
+        default "a.st1.ntp.br"
+    config M2_SNTP_INTERVAL_MS
+        int "Intervalo de ressincronizacao SNTP (ms)"
+        range 15000 3600000
+        default 60000
+    config M2_LED_GPIO
+        int "LED de E-stop (-1 desabilita; conferir placa)"
+        range -1 33
+        default -1
+endmenu
