@@ -34,10 +34,14 @@ Overlays: `dm/custom`, `preemptive/cooperative`, `80mhz/160mhz/240mhz`,
 O extra de slicing exige variar somente esse parametro em preemptivo.
 
 Confira o banner inicial e o cabecalho B do log. Fixar tarefas no core 0 nao
-substitui UNICORE. O header `scheduler_config.h` e incluido globalmente para
-alterar tambem o kernel, pois o IDF 6.1 fixa as macros em 1. Apos compilar,
-verifique `-include...scheduler_config.h` nas entradas de tasks.c, queue.c e
-port.c do compile_commands.json, e confirme as macros no pre-processamento.
+substitui UNICORE. O diretorio `config/freertos_override` entra antes dos
+headers do SDK e fornece wrappers para as duas formas de incluir FreeRTOSConfig.h.
+Eles carregam o header oficial e depois `scheduler_config.h`, alterando tambem
+o kernel, pois o IDF 6.1 fixa as macros em 1. Nao ha inclusao forcada via -include:
+ela causava conflito com __getreent na picolibc. Apos configurar novamente,
+verifique o caminho `-I...config/freertos_override` antes dos includes do FreeRTOS
+nas entradas de tasks.c, queue.c e port.c do compile_commands.json, e confirme
+as macros no pre-processamento.
 Essa verificacao ainda esta pendente; o banner sozinho nao a comprova.
 
 ## Refazer a base M1

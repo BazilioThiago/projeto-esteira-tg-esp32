@@ -13,6 +13,7 @@
 #include "esp_check.h"
 #include "m2.h"
 
+
 _Static_assert(CONFIG_FREERTOS_UNICORE, "M2 requires UNICORE");
 _Static_assert(CONFIG_FREERTOS_HZ == 1000, "Use a 1 ms tick");
 _Static_assert(configUSE_PREEMPTION == CONFIG_ESTEIRA_PREEMPTION, "Kernel override missing");
@@ -25,26 +26,28 @@ static SemaphoreHandle_t belt_mutex;
 static portMUX_TYPE latch_mux = portMUX_INITIALIZER_UNLOCKED;
 static bool stopped;
 static struct { float rpm, pos, pwm; uint32_t production; } belt;
-
 typedef struct { int64_t evt; uint32_t source; } event_t;
+
 /* Fixed instruction count, not a wall-time wait: frequency changes CPU cost.
  * These are approximate loads; measure actual C on the board. */
-static void workload(unsigned units)
-{
+
+ static void workload(unsigned units) {
     volatile uint32_t value = 1;
     uint32_t n = units * 240U * CONFIG_ESTEIRA_WORK_SCALE / 100U;
     for (uint32_t i = 0; i < n; ++i) value = value * 1664525U + 1013904223U;
     (void)value;
 }
-bool m2_activate(bool safety, uint32_t source, int64_t evt)
-{
+
+
+bool m2_activate(bool safety, uint32_t source, int64_t evt) {
     event_t e = {evt, source};
     bool ok = xQueueSend(safety ? q_safe : q_sort, &e, 0) == pdTRUE;
     if (!ok) m2_drop(safety ? M2_SAFE : M2_SORT);
     return ok;
 }
-static void IRAM_ATTR touch_isr(void *arg)
-{
+
+
+static void IRAM_ATTR touch_isr(void *arg) {
     (void)arg;
     uint32_t status = touch_pad_get_status();
     touch_pad_clear_status();
@@ -67,8 +70,9 @@ static void IRAM_ATTR touch_isr(void *arg)
     if (wake) portYIELD_FROM_ISR();
 #endif
 }
-static void touch_init(void)
-{
+
+
+static void touch_init(void) {
     ESP_ERROR_CHECK(touch_pad_init());
     ESP_ERROR_CHECK(touch_pad_set_fsm_mode(TOUCH_FSM_MODE_TIMER));
     ESP_ERROR_CHECK(touch_pad_set_trigger_mode(TOUCH_TRIGGER_BELOW));
@@ -83,8 +87,9 @@ static void touch_init(void)
     ESP_ERROR_CHECK(touch_pad_isr_register(touch_isr, NULL));
     ESP_ERROR_CHECK(touch_pad_intr_enable());
 }
-static void task_enc(void *arg)
-{
+
+
+static void task_enc(void *arg) {
     int64_t release;
     for (;;) {
         m2_wait_release(M2_ENC, &release);
@@ -101,8 +106,9 @@ static void task_enc(void *arg)
         if (xQueueSend(q_ctrl, &e, 0) != pdTRUE) m2_drop(M2_CTRL);
     }
 }
-static void task_ctrl(void *arg)
-{
+
+
+static void task_ctrl(void *arg) {
     float integral = 0;
     event_t e, hmi;
     for (;;) {
@@ -132,8 +138,9 @@ static void task_ctrl(void *arg)
 #endif
     }
 }
-static void task_sort(void *arg)
-{
+
+
+static void task_sort(void *arg) {
     event_t e;
     for (;;) {
         xQueueReceive(q_sort, &e, portMAX_DELAY);
@@ -150,8 +157,9 @@ static void task_sort(void *arg)
 #endif
     }
 }
-static void task_safe(void *arg)
-{
+
+
+static void task_safe(void *arg) {
     event_t e;
     for (;;) {
         xQueueReceive(q_safe, &e, portMAX_DELAY);
@@ -173,12 +181,14 @@ static void task_safe(void *arg)
 #endif
     }
 }
-static void create(TaskFunction_t fn, const char *name, unsigned stack, unsigned priority)
-{
+
+
+static void create(TaskFunction_t fn, const char *name, unsigned stack, unsigned priority) {
     configASSERT(xTaskCreatePinnedToCore(fn, name, stack, NULL, priority, NULL, 0) == pdPASS);
 }
-void app_main(void)
-{
+
+
+void app_main(void) {
     printf("M2 policy=%s preemption=%d slicing=%d MHz=%d cores=%d protocol=%s\n",
            CONFIG_ESTEIRA_DM ? "DM" : "CUSTOM", configUSE_PREEMPTION,
            configUSE_TIME_SLICING, CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ,

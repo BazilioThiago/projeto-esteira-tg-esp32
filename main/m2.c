@@ -45,38 +45,42 @@ static int64_t sync_mono;
 /* Release timestamps are captured in the esp_timer callback, before the
  * application task becomes ready. Queueing delay remains in its response time.
  * Timer service jitter must be analyzed separately from this release latency. */
-static void periodic_release(void *arg)
-{
+
+static void periodic_release(void *arg) {
     unsigned task = (unsigned)(uintptr_t)arg;
     int64_t now = esp_timer_get_time();
     if (xQueueSend(releases[task], &now, 0) != pdTRUE) m2_drop(task);
 }
-void m2_wait_release(unsigned task, int64_t *release)
-{
+
+
+void m2_wait_release(unsigned task, int64_t *release) {
     xQueueReceive(releases[task], release, portMAX_DELAY);
 }
-void m2_start_periodic(void)
-{
+
+
+void m2_start_periodic(void) {
     ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timers[M2_ENC], 5000));
     ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timers[M2_MONITOR], 500000));
     if (!CONFIG_ESTEIRA_M1_BASELINE)
         ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timers[M2_TIME], 1000000));
 }
 
-void IRAM_ATTR m2_drop_isr(unsigned task)
-{
+
+void IRAM_ATTR m2_drop_isr(unsigned task) {
     portENTER_CRITICAL_ISR(&stats_mux);
     drops[task]++;
     portEXIT_CRITICAL_ISR(&stats_mux);
 }
-void m2_drop(unsigned task)
-{
+
+
+void m2_drop(unsigned task) {
     portENTER_CRITICAL(&stats_mux);
     drops[task]++;
     portEXIT_CRITICAL(&stats_mux);
 }
-void m2_record(unsigned task, unsigned source, int64_t evt, int64_t start, int64_t end, int64_t block)
-{
+
+
+void m2_record(unsigned task, unsigned source, int64_t evt, int64_t start, int64_t end, int64_t block) {
     record_t r = {.task=task, .source=source, .evt=evt, .start=start, .end=end, .block=block};
     portENTER_CRITICAL(&stats_mux);
     stats_t *s = &stats[task];
@@ -96,14 +100,16 @@ void m2_record(unsigned task, unsigned source, int64_t evt, int64_t start, int64
         portEXIT_CRITICAL(&stats_mux);
     }
 }
-static int64_t utc_us(void)
-{
+
+
+static int64_t utc_us(void) {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return (int64_t)tv.tv_sec * 1000000 + tv.tv_usec;
 }
-static void sync_cb(struct timeval *tv)
-{
+
+
+static void sync_cb(struct timeval *tv) {
     (void)tv;
     portENTER_CRITICAL(&sync_mux);
     synced = true;
@@ -114,8 +120,9 @@ static void sync_cb(struct timeval *tv)
     sync_generation++;
     portEXIT_CRITICAL(&sync_mux);
 }
-static void wifi_cb(void *arg, esp_event_base_t base, int32_t id, void *data)
-{
+
+
+static void wifi_cb(void *arg, esp_event_base_t base, int32_t id, void *data) {
     (void)arg; (void)data;
     if (base == WIFI_EVENT && (id == WIFI_EVENT_STA_START || id == WIFI_EVENT_STA_DISCONNECTED)) {
         xEventGroupClearBits(wifi_events, 1);
@@ -124,8 +131,9 @@ static void wifi_cb(void *arg, esp_event_base_t base, int32_t id, void *data)
         xEventGroupSetBits(wifi_events, 1);
     }
 }
-void m2_init(void)
-{
+
+
+void m2_init(void) {
     logs = xQueueCreate(LOG_LEN, sizeof(record_t));
     replies = xQueueCreate(32, 192);
     wifi_events = xEventGroupCreate();
@@ -163,8 +171,8 @@ void m2_init(void)
     ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE));
 }
 
-void m2_time_task(void *arg)
-{
+
+void m2_time_task(void *arg) {
     int64_t release;
     bool started = false;
     for (;;) {
@@ -189,8 +197,8 @@ void m2_time_task(void *arg)
     }
 }
 
-static void command(const char *line)
-{
+
+static void command(const char *line) {
     unsigned id;
     char verb[16], extra;
     int64_t pc_utc;
@@ -212,15 +220,16 @@ static char tx[PACKET_LEN], rx[256];
 static size_t tx_len, tx_pos, rx_len;
 static uint32_t sequence;
 static struct sockaddr_in peer;
-static void disconnect_peer(void)
-{
+
+static void disconnect_peer(void) {
     if (fd >= 0) close(fd);
     fd = -1; connecting = false; rx_len = 0;
     if (tx_len) ++tx_drops;
     tx_len = tx_pos = 0;
 }
-static bool socket_ready(void)
-{
+
+
+static bool socket_ready(void) {
     if (CONFIG_ESTEIRA_M1_BASELINE) return true;
     if (!(xEventGroupGetBits(wifi_events) & 1)) { disconnect_peer(); return false; }
     if (fd < 0) {
@@ -250,8 +259,9 @@ static bool socket_ready(void)
     }
     return true;
 }
-static void receive_commands(void)
-{
+
+
+static void receive_commands(void) {
     /* Bounded number of receives per 500 ms activation. */
     for (unsigned n = 0; n < 32; ++n) {
         char chunk[256];
@@ -270,8 +280,9 @@ static void receive_commands(void)
         if (!CONFIG_ESTEIRA_TCP) rx_len = 0;
     }
 }
-static void make_packet(const char *body, size_t body_len)
-{
+
+
+static void make_packet(const char *body, size_t body_len) {
     bool valid;
     portENTER_CRITICAL(&sync_mux); valid = synced; portEXIT_CRITICAL(&sync_mux);
     int64_t mono = esp_timer_get_time(), utc = utc_us();
@@ -290,8 +301,9 @@ static void make_packet(const char *body, size_t body_len)
     memcpy(tx + h, body, body_len);
     tx_len = h + body_len; tx_pos = 0;
 }
-static bool flush_packet(void)
-{
+
+
+static bool flush_packet(void) {
     if (CONFIG_ESTEIRA_M1_BASELINE) {
         size_t sent = fwrite(tx + tx_pos, 1, tx_len - tx_pos, stdout);
         tx_pos += sent;
@@ -311,8 +323,9 @@ static bool flush_packet(void)
     tx_len = tx_pos = 0;
     return true;
 }
-static void send_logs(void)
-{
+
+
+static void send_logs(void) {
     char body[1000], reply[192];
     for (unsigned batch = 0; batch < 64; ++batch) {
         if (tx_len && !flush_packet()) return;
@@ -323,7 +336,7 @@ static void send_logs(void)
         record_t r;
         while (used < sizeof(body) - 200 && xQueueReceive(logs, &r, 0) == pdTRUE) {
             used += snprintf(body + used, sizeof(body) - used,
-                "E,%u,%u,%u,%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64 "\n",
+                "E,%" PRIu32 ",%" PRIu32 ",%" PRIu32 ",%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64 "\n",
                 r.task, r.source, r.job, r.evt, r.start, r.end, deadlines[r.task], r.block);
         }
         if (!used) return;
@@ -331,10 +344,11 @@ static void send_logs(void)
         if (!flush_packet()) return;
     }
 }
+
+
 /* Runtime counters are CPU execution time, unlike (end-start), which includes
  * preemption and blocking. Snapshot deltas handle 32-bit wrap modulo 2^32. */
-static void heartbeat(void)
-{
+static void heartbeat(void) {
     static TaskStatus_t tasks[40];
     static uint32_t previous_total, previous_idle;
     configRUN_TIME_COUNTER_TYPE total = 0;
@@ -352,19 +366,21 @@ static void heartbeat(void)
     iterations = time_iterations; gen = sync_generation;
     portEXIT_CRITICAL(&sync_mux);
     char body[1000];
-    int used = snprintf(body, sizeof(body), "T,%" PRId64 ",%" PRIu64 ",%u,%u,%d\n",
+    int used = snprintf(body, sizeof(body), "T,%" PRId64 ",%" PRIu64 ",%" PRIu32 ",%" PRIu32 ",%d\n",
                         age, elapsed_cycles, iterations, gen, busy_permille);
     for (unsigned i = 0; i < M2_TASKS; ++i) {
         stats_t s; uint32_t dropped;
         portENTER_CRITICAL(&stats_mux); s = stats[i]; dropped = drops[i]; portEXIT_CRITICAL(&stats_mux);
         used += snprintf(body + used, sizeof(body) - used,
-            "S,%u,%u,%u,%" PRId64 ",%u,%u,%u\n", i, s.jobs, s.misses, s.wcrt, s.windows, s.violations, dropped);
+            "S,%u,%" PRIu32 ",%" PRIu32 ",%" PRId64 ",%" PRIu32 ",%" PRIu32 ",%" PRIu32 "\n",
+            i, s.jobs, s.misses, s.wcrt, s.windows, s.violations, dropped);
     }
     make_packet(body, used);
     flush_packet();
 }
-void m2_monitor_task(void *arg)
-{
+
+
+void m2_monitor_task(void *arg) {
     int64_t release;
     for (;;) {
         m2_wait_release(M2_MONITOR, &release);

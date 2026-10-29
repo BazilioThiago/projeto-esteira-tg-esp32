@@ -72,4 +72,5 @@ def export():
         title='Esteira industrial - STR M2 - Relatório-base',author='Guilherme Santana e Thiago Bazilio').build(story,onFirstPage=footer,onLaterPages=footer)
     print(out)
 
-if __name__=='__main__': export()
+if __name__ == '__main__':
+    export()
