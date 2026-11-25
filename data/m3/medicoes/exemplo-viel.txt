@@ -1,0 +1,802 @@
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+Rodando por 10 segundos...
+[GERADOR] nova requisição aperiódica 1
+[T1] executando
+[SERVIDOR] Executando job aperiódico 1
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 2
+[SERVIDOR] Executando job aperiódico 2
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 3
+[GERADOR] nova requisição aperiódica 4
+[SERVIDOR] Executando job aperiódico 3
+[T1] executando
+[SERVIDOR] Executando job aperiódico 4
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 5
+[SERVIDOR] Executando job aperiódico 5
+[T1] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 6
+[SERVIDOR] Executando job aperiódico 6
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 7
+[T1] executando
+[SERVIDOR] Executando job aperiódico 7
+[GERADOR] nova requisição aperiódica 8
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 8
+[T1] executando
+[GERADOR] nova requisição aperiódica 9
+[SERVIDOR] Executando job aperiódico 9
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 10
+[GERADOR] nova requisição aperiódica 11
+[SERVIDOR] Executando job aperiódico 10
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 11
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 12
+[T1] executando
+[SERVIDOR] Executando job aperiódico 12
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 13
+[SERVIDOR] Executando job aperiódico 13
+[T1] executando
+[GERADOR] nova requisição aperiódica 14
+[SERVIDOR] Executando job aperiódico 14
+[T1] executando
+[T2] executando
+[T4] executando
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 15
+[T1] executando
+[SERVIDOR] Executando job aperiódico 15
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 16
+[SERVIDOR] Executando job aperiódico 16
+[T1] executando
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 17
+[SERVIDOR] Executando job aperiódico 17
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 18
+[SERVIDOR] Executando job aperiódico 18
+[T1] executando
+[GERADOR] nova requisição aperiódica 19
+[SERVIDOR] Executando job aperiódico 19
+[T1] executando
+[T2] executando
+[T3] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 20
+[T1] executando
+[T2] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 20
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 21
+[SERVIDOR] Executando job aperiódico 21
+[T1] executando
+[GERADOR] nova requisição aperiódica 22
+[SERVIDOR] Executando job aperiódico 22
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 23
+[SERVIDOR] Executando job aperiódico 23
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 24
+[SERVIDOR] Executando job aperiódico 24
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 25
+[SERVIDOR] Executando job aperiódico 25
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 26
+[SERVIDOR] Executando job aperiódico 26
+[T1] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 27
+[SERVIDOR] Executando job aperiódico 27
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 28
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 29
+[SERVIDOR] Executando job aperiódico 28
+[SERVIDOR] Executando job aperiódico 29
+[T1] executando
+[GERADOR] nova requisição aperiódica 30
+[SERVIDOR] Executando job aperiódico 30
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 31
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 31
+[GERADOR] nova requisição aperiódica 32
+[T1] executando
+[T2] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 32
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 33
+[SERVIDOR] Executando job aperiódico 33
+[T1] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 34
+[T1] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 35
+[SERVIDOR] Executando job aperiódico 34
+[SERVIDOR] Executando job aperiódico 35
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 36
+[SERVIDOR] Executando job aperiódico 36
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 37
+[T1] executando
+[GERADOR] nova requisição aperiódica 38
+[SERVIDOR] Executando job aperiódico 37
+[SERVIDOR] Executando job aperiódico 38
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 39
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 39
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 40
+[SERVIDOR] Executando job aperiódico 40
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 41
+[T1] executando
+[SERVIDOR] Executando job aperiódico 41
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 42
+[SERVIDOR] Executando job aperiódico 42
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 43
+[SERVIDOR] Executando job aperiódico 43
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 44
+[SERVIDOR] Executando job aperiódico 44
+[T1] executando
+[GERADOR] nova requisição aperiódica 45
+[SERVIDOR] Executando job aperiódico 45
+[T1] executando
+[T2] executando
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 46
+[SERVIDOR] Executando job aperiódico 46
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 47
+[SERVIDOR] Executando job aperiódico 47
+[T1] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 48
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 48
+[T1] executando
+[T2] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 49
+[SERVIDOR] Executando job aperiódico 49
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 50
+[T1] executando
+[T2] executando
+[SERVIDOR] Executando job aperiódico 50
+[GERADOR] nova requisição aperiódica 51
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 51
+[T1] executando
+[T2] executando
+[T4] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 52
+[SERVIDOR] Executando job aperiódico 52
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 53
+[T1] executando
+[SERVIDOR] Executando job aperiódico 53
+[T1] executando
+[T2] executando
+[T4] executando
+[T1] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 54
+[SERVIDOR] Executando job aperiódico 54
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 55
+[SERVIDOR] Executando job aperiódico 55
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 56
+[T1] executando
+[T2] executando
+[SERVIDOR] Executando job aperiódico 56
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 57
+[T1] executando
+[SERVIDOR] Executando job aperiódico 57
+[GERADOR] nova requisição aperiódica 58
+[T1] executando
+[T2] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 58
+[T1] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 59
+[SERVIDOR] Executando job aperiódico 59
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 60
+[SERVIDOR] Executando job aperiódico 60
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 61
+[SERVIDOR] Executando job aperiódico 61
+[T1] executando
+[T2] executando
+[T1] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 62
+[T1] executando
+[T2] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 62
+[T1] executando
+[GERADOR] nova requisição aperiódica 63
+[SERVIDOR] Executando job aperiódico 63
+[T1] executando
+[T2] executando
+[T3] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 64
+[T1] executando
+[T2] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 64
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 65
+[SERVIDOR] Executando job aperiódico 65
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 66
+[T1] executando
+[SERVIDOR] Executando job aperiódico 66
+[GERADOR] nova requisição aperiódica 67
+[SERVIDOR] Executando job aperiódico 67
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 68
+[SERVIDOR] Executando job aperiódico 68
+[T1] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 69
+[SERVIDOR] Executando job aperiódico 69
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 70
+[SERVIDOR] Executando job aperiódico 70
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 71
+[T1] executando
+[SERVIDOR] Executando job aperiódico 71
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 72
+[T1] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 73
+[SERVIDOR] Executando job aperiódico 72
+[T1] executando
+[T2] executando
+[SERVIDOR] Executando job aperiódico 73
+[T1] executando
+[GERADOR] nova requisição aperiódica 74
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 74
+[T1] executando
+[GERADOR] nova requisição aperiódica 75
+[SERVIDOR] Executando job aperiódico 75
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 76
+[SERVIDOR] Executando job aperiódico 76
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 77
+[SERVIDOR] Executando job aperiódico 77
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 78
+[SERVIDOR] Executando job aperiódico 78
+[T1] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 79
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 79
+[T1] executando
+[T2] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 80
+[SERVIDOR] Executando job aperiódico 80
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 81
+[SERVIDOR] Executando job aperiódico 81
+[T1] executando
+[T1] executando
+[T2] executando
+[T1] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 82
+[T1] executando
+[T2] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 82
+[T1] executando
+[GERADOR] nova requisição aperiódica 83
+[SERVIDOR] Executando job aperiódico 83
+[T1] executando
+[T2] executando
+[T3] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 84
+[T1] executando
+[T2] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 84
+[GERADOR] nova requisição aperiódica 85
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 85
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 86
+[SERVIDOR] Executando job aperiódico 86
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 87
+[T1] executando
+[SERVIDOR] Executando job aperiódico 87
+[GERADOR] nova requisição aperiódica 88
+[T1] executando
+[T2] executando
+[SERVIDOR] Executando job aperiódico 88
+[T1] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 89
+[SERVIDOR] Executando job aperiódico 89
+[T1] executando
+[T2] executando
+[T4] executando
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 90
+[SERVIDOR] Executando job aperiódico 90
+[T1] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 91
+[SERVIDOR] Executando job aperiódico 91
+[T1] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 92
+[T1] executando
+[T2] executando
+[SERVIDOR] Executando job aperiódico 92
+[T1] executando
+[GERADOR] nova requisição aperiódica 93
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 93
+[T1] executando
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 94
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 94
+[GERADOR] nova requisição aperiódica 95
+[T1] executando
+[T2] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 95
+[T1] executando
+[GERADOR] nova requisição aperiódica 96
+[SERVIDOR] Executando job aperiódico 96
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 97
+[SERVIDOR] Executando job aperiódico 97
+[T1] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 98
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 98
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 99
+[SERVIDOR] Executando job aperiódico 99
+[T1] executando
+[GERADOR] nova requisição aperiódica 100
+[SERVIDOR] Executando job aperiódico 100
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 101
+[T1] executando
+[T2] executando
+[SERVIDOR] Executando job aperiódico 101
+[GERADOR] nova requisição aperiódica 102
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 102
+[T1] executando
+[T2] executando
+[T4] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 103
+[T1] executando
+[T2] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 103
+[T1] executando
+[GERADOR] nova requisição aperiódica 104
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 105
+[SERVIDOR] Executando job aperiódico 104
+[SERVIDOR] Executando job aperiódico 105
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 106
+[T1] executando
+[SERVIDOR] Executando job aperiódico 106
+[GERADOR] nova requisição aperiódica 107
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 107
+[T1] executando
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 108
+[SERVIDOR] Executando job aperiódico 108
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 109
+[T1] executando
+[SERVIDOR] Executando job aperiódico 109
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 110
+[T1] executando
+[SERVIDOR] Executando job aperiódico 110
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 111
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 111
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 112
+[T1] executando
+[GERADOR] nova requisição aperiódica 113
+[SERVIDOR] Executando job aperiódico 112
+[SERVIDOR] Executando job aperiódico 113
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 114
+[T1] executando
+[T2] executando
+[SERVIDOR] Executando job aperiódico 114
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 115
+[SERVIDOR] Executando job aperiódico 115
+[T1] executando
+[GERADOR] nova requisição aperiódica 116
+[SERVIDOR] Executando job aperiódico 116
+[T1] executando
+[T2] executando
+[T3] executando
+[T1] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 117
+[SERVIDOR] Executando job aperiódico 117
+[T1] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 118
+[SERVIDOR] Executando job aperiódico 118
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 119
+[SERVIDOR] Executando job aperiódico 119
+[T1] executando
+[GERADOR] nova requisição aperiódica 120
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 120
+[T1] executando
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 121
+[SERVIDOR] Executando job aperiódico 121
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 122
+[T1] executando
+[SERVIDOR] Executando job aperiódico 122
+[T1] executando
+[T2] executando
+[T3] executando
+[T1] executando
+[GERADOR] nova requisição aperiódica 123
+[SERVIDOR] Executando job aperiódico 123
+[T1] executando
+[T2] executando
+[T4] executando
+[T1] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 124
+[T1] executando
+[T2] executando
+[SERVIDOR] Executando job aperiódico 124
+[T1] executando
+[GERADOR] nova requisição aperiódica 125
+[SERVIDOR] Executando job aperiódico 125
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 126
+[T1] executando
+[SERVIDOR] Executando job aperiódico 126
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 127
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 127
+[GERADOR] nova requisição aperiódica 128
+[T1] executando
+[T2] executando
+[T4] executando
+[SERVIDOR] Executando job aperiódico 128
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 129
+[SERVIDOR] Executando job aperiódico 129
+[T1] executando
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 130
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 130
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 131
+[SERVIDOR] Executando job aperiódico 131
+[T1] executando
+[GERADOR] nova requisição aperiódica 132
+[SERVIDOR] Executando job aperiódico 132
+[T1] executando
+[T2] executando
+[T3] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 133
+[T1] executando
+[SERVIDOR] Executando job aperiódico 133
+[T1] executando
+[T2] executando
+[GERADOR] nova requisição aperiódica 134
+[T1] executando
+[T3] executando
+[SERVIDOR] Executando job aperiódico 134
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 135
+[SERVIDOR] Executando job aperiódico 135
+[T1] executando
+[T1] executando
+[T2] executando
+[T3] executando
+[GERADOR] nova requisição aperiódica 136
+[SERVIDOR] Executando job aperiódico 136
+[T1] executando
+[GERADOR] nova requisição aperiódica 137
+[SERVIDOR] Executando job aperiódico 137
+[T1] executando
+[T2] executando
+[T4] executando
+[GERADOR] nova requisição aperiódica 138
+[SERVIDOR] Executando job aperiódico 138
+[T1] executando
+[T3] executando
+[T1] executando
+[T2] executando
+Encerrando (para exemplo simples vamos apenas sair do processo).

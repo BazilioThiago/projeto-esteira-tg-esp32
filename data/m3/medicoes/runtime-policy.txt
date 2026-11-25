@@ -1,0 +1,8 @@
+    PID     TID CLS RTPRIO PSR COMMAND
+   1859    1859  TS      -   0 servidor_sort
+   1859    1860  FF     60   0 servidor_sort
+   1859    1861  FF     50   0 servidor_sort
+   1859    1862  FF     49   0 servidor_sort
+   1859    1863  FF     48   0 servidor_sort
+   1859    1864  FF     47   0 servidor_sort
+   1859    1865  FF     40   0 servidor_sort

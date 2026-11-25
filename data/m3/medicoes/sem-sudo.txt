@@ -1,0 +1,3 @@
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=empty seconds=1 Ts_ms=50 Cs_ms=20
+Execute com sudo; nao ha fallback silencioso para SCHED_OTHER.
+pthread_create: Operation not permitted

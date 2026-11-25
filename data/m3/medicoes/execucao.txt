@@ -1,0 +1,135 @@
+=== M3: ambiente e compilacao ===
+2026-11-25T18:59:28-03:00
+Linux bazilio-virtualbox 7.0.0-31-generic #31~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Mon Aug 10 09:38:02 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.5 LTS (Noble Numbat)"
+VERSION_CODENAME=noble
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=noble
+LOGO=ubuntu-logo
+gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           39 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  1
+On-line CPU(s) list:                     0
+Vendor ID:                               GenuineIntel
+Model name:                              Intel(R) Core(TM) i5-8500 CPU @ 3.00GHz
+CPU family:                              6
+Model:                                   158
+Thread(s) per core:                      1
+Core(s) per socket:                      1
+Socket(s):                               1
+Stepping:                                10
+BogoMIPS:                                6000,01
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch pti fsgsbase bmi1 avx2 bmi2 invpcid rdseed adx clflushopt arat md_clear flush_l1d arch_capabilities
+Hypervisor vendor:                       KVM
+Virtualization type:                     full
+L1d cache:                               32 KiB (1 instance)
+L1i cache:                               32 KiB (1 instance)
+L2 cache:                                256 KiB (1 instance)
+L3 cache:                                9 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0
+Vulnerability Gather data sampling:      Unknown: Dependent on hypervisor status
+gcc -std=c11 -O2 -Wall -Wextra -Werror m3/servidor_sort.c -o servidor_sort -pthread
+320522921aa20311b82c19420d77d25f80361fc14119da362f899a72814c7571  m3/servidor_sort.c
+9b3c82a7fd44581951e92a9695bc55ca7cc7370d7947da5308d6082e8084c19d  data/codigos_viel/Aperiodic_Server_ex.c
+=== Testes de parametros invalidos ===
+Parametro invalido: 0 (limite 1..30)
+Cs deve ser <= Ts
+Cenario invalido
+Parametro invalido: abc (limite 1..30)
+=== Permissao SCHED_FIFO (sem sudo deve falhar se usuario nao tem privilegio RT) ===
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=empty seconds=1 Ts_ms=50 Cs_ms=20
+Execute com sudo; nao ha fallback silencioso para SCHED_OTHER.
+pthread_create: Operation not permitted
+=== Autorizar execucao dos ensaios SCHED_FIFO ===
+=== Exemplo original do professor ===
+Exemplo original concluido por 10 segundos; ver exemplo-viel.txt
+EXECUTANDO exemplo-empty-r1: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=empty seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=0 accepted=0 rejected=0 completed=0 pending=0 production=0 max_depth=0 log_lost=0
+EXECUTANDO exemplo-empty-r2: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=empty seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=0 accepted=0 rejected=0 completed=0 pending=0 production=0 max_depth=0 log_lost=0
+EXECUTANDO exemplo-empty-r3: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=empty seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=0 accepted=0 rejected=0 completed=0 pending=0 production=0 max_depth=0 log_lost=0
+EXECUTANDO exemplo-normal-r1: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=normal seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=75 accepted=75 rejected=0 completed=75 pending=0 production=75 max_depth=1 log_lost=0
+EXECUTANDO exemplo-normal-r2: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=normal seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=75 accepted=75 rejected=0 completed=75 pending=0 production=75 max_depth=2 log_lost=0
+EXECUTANDO exemplo-normal-r3: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=normal seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=75 accepted=75 rejected=0 completed=75 pending=0 production=75 max_depth=1 log_lost=0
+EXECUTANDO exemplo-burst-r1: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=burst seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=720 accepted=720 rejected=0 completed=720 pending=0 production=720 max_depth=12 log_lost=0
+EXECUTANDO exemplo-burst-r2: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=burst seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=720 accepted=720 rejected=0 completed=720 pending=0 production=720 max_depth=12 log_lost=0
+EXECUTANDO exemplo-burst-r3: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=burst seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=720 accepted=720 rejected=0 completed=720 pending=0 production=720 max_depth=12 log_lost=0
+EXECUTANDO exemplo-overload-r1: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=overload seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=2880 accepted=1920 rejected=960 completed=1908 pending=12 production=1908 max_depth=32 log_lost=0
+EXECUTANDO exemplo-overload-r2: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=overload seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=2880 accepted=1920 rejected=960 completed=1907 pending=13 production=1907 max_depth=32 log_lost=0
+EXECUTANDO exemplo-overload-r3: Ts=50 ms Cs=20 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=overload seconds=6 Ts_ms=50 Cs_ms=20
+TOTAL produced=2880 accepted=1920 rejected=960 completed=1907 pending=13 production=1907 max_depth=32 log_lost=0
+EXECUTANDO ajustado-empty-r1: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=empty seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=0 accepted=0 rejected=0 completed=0 pending=0 production=0 max_depth=0 log_lost=0
+EXECUTANDO ajustado-empty-r2: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=empty seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=0 accepted=0 rejected=0 completed=0 pending=0 production=0 max_depth=0 log_lost=0
+EXECUTANDO ajustado-empty-r3: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=empty seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=0 accepted=0 rejected=0 completed=0 pending=0 production=0 max_depth=0 log_lost=0
+EXECUTANDO ajustado-normal-r1: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=normal seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=75 accepted=75 rejected=0 completed=75 pending=0 production=75 max_depth=1 log_lost=0
+EXECUTANDO ajustado-normal-r2: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=normal seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=75 accepted=75 rejected=0 completed=75 pending=0 production=75 max_depth=1 log_lost=0
+EXECUTANDO ajustado-normal-r3: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=normal seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=75 accepted=75 rejected=0 completed=75 pending=0 production=75 max_depth=1 log_lost=0
+EXECUTANDO ajustado-burst-r1: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=burst seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=720 accepted=720 rejected=0 completed=720 pending=0 production=720 max_depth=12 log_lost=0
+EXECUTANDO ajustado-burst-r2: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=burst seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=720 accepted=720 rejected=0 completed=720 pending=0 production=720 max_depth=12 log_lost=0
+EXECUTANDO ajustado-burst-r3: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=burst seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=720 accepted=720 rejected=0 completed=720 pending=0 production=720 max_depth=12 log_lost=0
+EXECUTANDO ajustado-overload-r1: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=overload seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=2880 accepted=1909 rejected=971 completed=1907 pending=2 production=1907 max_depth=32 log_lost=0
+EXECUTANDO ajustado-overload-r2: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=overload seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=2880 accepted=1887 rejected=993 completed=1883 pending=4 production=1883 max_depth=32 log_lost=0
+EXECUTANDO ajustado-overload-r3: Ts=5 ms Cs=2 ms (6 segundos)
+M3 SORT pthreads SCHED_FIFO cpu=0 scenario=overload seconds=6 Ts_ms=5 Cs_ms=2
+TOTAL produced=2880 accepted=1906 rejected=974 completed=1902 pending=4 production=1902 max_depth=32 log_lost=0
+TODOS OS ENSAIOS CONCLUIDOS
+Binarios locais: /tmp/esteira-m3.L5ROzF

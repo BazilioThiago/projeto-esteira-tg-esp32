@@ -1,0 +1,8 @@
+# Mantem scripts e fontes compativeis com Linux no checkout do Windows.
+*.sh text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.py text eol=lf
+
+# Registros experimentais sao preservados byte a byte.
+data/m3/medicoes/* -text
