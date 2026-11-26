@@ -1,11 +1,8 @@
 /* M3 - Guilherme Santana e Thiago Bazilio.
- * Porta a operacao SORT da M2 para pthreads no Linux.
- * Base: data/codigos_viel/Aperiodic_Server_ex.c (Felipe Viel).
- * gcc -std=c11 -O2 -Wall -Wextra -Werror servidor_sort.c -o servidor_sort -pthread
- * sudo ./servidor_sort normal 10 50 20
- * Argumentos: cenario, duracao(s), Ts(ms), Cs(ms).
- * O exemplo executa jobs atomicos: o ultimo job pode ultrapassar Cs.
- * Essa ultrapassagem e medida, nunca escondida na analise.
+Porta a operacao SORT da M2 para pthreads no Linux. 
+gcc -std=c11 -O2 -Wall -Wextra -Werror servidor_sort.c -o servidor_sort -pthread
+sudo ./servidor_sort normal 10 50 20
+Argumentos: cenario, duracao(s), Ts(ms), Cs(ms).
  */
 #define _GNU_SOURCE
 #include <errno.h>

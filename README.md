@@ -7,14 +7,12 @@ São duas execuções independentes no mesmo projeto.
 
 ## M2 na ESP32
 
-O firmware final está em `main/`, com base no commit `be16289` do antigo
-branch `teste_para_m2`, usado nos quatro ensaios do relatório da M2.
+O firmware final está em `main/`, usado nos quatro ensaios do relatório da M2.
 No terminal ESP-IDF 6.1, a partir desta pasta:
 
 ```powershell
-idf.py menuconfig
-idf.py build
-idf.py -p COM3 flash monitor
+idf.py build # ou botão Build Project
+idf.py -p COM3 flash monitor # ou botão Flash Device
 ```
 
 Em **Esteira - M2**, configure a rede Wi-Fi e escolha TCP ou UDP.
